@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/jobseekers/sign-up', 'Auth\RegisterController@jobseeker');
+Route::post('/employers/sign-up', 'Auth\RegisterController@employer');
+
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('jobseekers', 'Jobseekers\JobseekerController');
+    Route::apiResource('employers', 'Employers\EmployerController');
+});
