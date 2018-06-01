@@ -1,7 +1,10 @@
 window.Vue = require('vue');
 import VueRouter from 'vue-router'
+// import Vuetify from 'vuetify'
+// import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 
 Vue.use(VueRouter);
+// Vue.use(Vuetify);
 
 Vue.component(
     'passport-clients',
@@ -17,6 +20,13 @@ Vue.component(
     'passport-personal-access-tokens',
     require('./components/passport/PersonalAccessTokens.vue')
 );
+
+Vue.component(
+    'navbar',
+    require('./components/navs/navbar.vue')
+);
+
+Vue.component('navigation-drawer', require('./components/navs/navigation-drawer.vue'))
 
 window._ = require('lodash');
 window.Popper = require('popper.js').default;

@@ -25,24 +25,24 @@ class RegisterController extends Controller
     |
     */
 
-    //use RegistersUsers;
+    use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
      *
      * @var string
      */
-    //protected $redirectTo = '/home';
+    protected $redirectTo = '/admin/oauth';
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    // public function __construct()
-    // {
-    //     $this->middleware('guest');
-    // }
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
 
     /**
      * Get a validator for an incoming registration request.
@@ -50,14 +50,14 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    // protected function validator(array $data)
-    // {
-    //     return Validator::make($data, [
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|min:6|confirmed',
-    //     ]);
-    // }
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+    }
 
     /**
      * Create a new user instance after a valid registration.
@@ -65,34 +65,38 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\User
      */
-    // protected function create(array $data)
-    // {
-    //     return User::create([
-    //         'name' => $data['name'],
-    //         'email' => $data['email'],
-    //         'password' => Hash::make($data['password']),
-    //     ]);
-    // }
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+    }
 
     public function jobseeker(RegisterJobseeker $request)
     {   
-        User::create([
+        $userId = User::create([
             'email' => $request['email'],
             'password' => bcrypt($request['password']),
             'phonenumber' => $request['phonenumber'],
             'user_type' => 2,
-        ]);
+        ])->id;
 
-        Jobseeker::create([
-            'first_name' => $request['first_name'],
-            'last_name' => $request['last_name'],
-            'job_category' => $request['job_category'],
-            'location' => $request['location']
-        ]);
+        if($userId) {
+            $uuid = User::select('uuid')->firstOrFail($userId);
 
-        return [
-            message => 'Successfully registered'
-        ];
+            Jobseeker::create([
+                'first_name' => $request['first_name'],
+                'last_name' => $request['last_name'],
+                'job_category' => $request['job_category'],
+                'location' => $request['location']
+            ]);
+            
+            return [
+                $message => 'Successfully registered'
+            ];
+        }
     }
 
     public function employer() 
