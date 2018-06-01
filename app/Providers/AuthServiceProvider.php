@@ -29,8 +29,11 @@ class AuthServiceProvider extends ServiceProvider
         Passport::routes();
 
         Passport::tokensCan([
-            'place-orders' => 'Place orders',
-            'check-status' => 'Check order status',
+            'get-jobs' => 'Retrieve Job posts',
+            'create-job' => 'Create Job post',
+            'update-job' => 'Update Job post',
+            'delete-job' => 'Delete Job',
+            'apply-job' => 'Can apply to Job post'
         ]);
         //
     }
