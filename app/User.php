@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'username', 'phonenumber',
+        'name','email', 'password', 'username', 'phonenumber',
         'user_type', 'is_activated', 'is_reviewed', 'is_active'
     ];
 
@@ -37,5 +37,13 @@ class User extends Authenticatable
         self::creating(function ($model) {
             $model->uuid = (string) Uuid::generate(4);
         });
+    }
+
+    public function jobseeker_profile() {
+        return $this->hasOne(Jobseeker::class, 'uuid');
+    }
+
+    public function employer_profile() {
+        return $this->hasOne(Employer::class, 'uuid');
     }
 }

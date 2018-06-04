@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\Registration\RegisterJobseeker;
 use App\Http\Requests\Registration\RegisterEmployer;
+use Illuminate\Support\Facades\Auth;
+
 
 class RegisterController extends Controller
 {
@@ -78,23 +80,35 @@ class RegisterController extends Controller
     {   
         $userId = User::create([
             'email' => $request['email'],
-            'password' => bcrypt($request['password']),
+            'password' => Hash::make($request['password']),
             'phonenumber' => $request['phonenumber'],
             'user_type' => 2,
         ])->id;
 
         if($userId) {
-            $uuid = User::select('uuid')->firstOrFail($userId);
+            $user = User::where('id', $userId)->firstOrFail();
 
-            Jobseeker::create([
+            $profile = Jobseeker::create([
+                'account_id' => $user['uuid'],
                 'first_name' => $request['first_name'],
                 'last_name' => $request['last_name'],
                 'job_category' => $request['job_category'],
                 'location' => $request['location']
             ]);
             
+            if (Auth::attempt(['email' => $user['email'], 'password' => $request['password']]))
+            
             return [
-                $message => 'Successfully registered'
+                'message' => 'Successfully registered',
+                'token' => $user->createToken('JobfairOnline')->accessToken,
+                'user' => [
+                    'uuid' => $user['uuid'],
+                    'email' => $user['email'],
+                    'phonenumber' => $user['phonenumber'],
+                    'user_type' => $user['user_type'],
+                    'profile' => $profile
+                ],
+                'auth_user' => Auth::user()
             ];
         }
     }
